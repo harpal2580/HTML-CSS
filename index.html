@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML-CSS Quiz</title>
+    <link rel="icon" type="image/x-icon" href="into.png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #121212;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+        }
+
+        #header {
+            position: absolute;
+            top: 10px;
+            font-size: 1.2rem;
+            color: #d14e36;
+            font-weight: bold;
+            white-space: nowrap; /* Ensures the text stays on one line */
+        }
+
+        .quiz-container {
+            background-color: #1e1e1e;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 2rem;
+            color: #4caf50;
+        }
+
+        .choices {
+            margin-bottom: 20px;
+        }
+
+        .choice {
+            background-color: #333;
+            border: none;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .choice:hover {
+            background-color: #555;
+        }
+
+        .selected {
+            background-color: #6aaf4c !important; /* Change to green when selected */
+            color: black;
+            /* font-weight: bold; */
+            border: 1px solid black;
+            transition: 0.3s ease-in-out;
+        }
+
+        #next-btn {
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #next-btn:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">Created by Harpal Singh</div>
+    <div class="quiz-container">
+        <h1>Quiz Time!</h1>
+        <div id="question"></div>
+        <div id="choices" class="choices"></div>
+        <button id="next-btn" onclick="nextQuestion()">Next</button>
+        <div id="result"></div>
+    </div>
+
+    <audio id="music" preload="auto">
+        <source src="Mass.mp3" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        const questions = [
+            {
+                question: "Which attribute is used to specify the URL of an image?",
+                choices: ["src", "href", "alt", "link"],
+                answer: 1
+            },
+            {
+                question: "Which attribute is used to add a link to a webpage in HTML?",
+                choices: ["href", "src", "atach", "add"],
+                answer: 1
+            },
+            {
+                question: "What is the default value of the position property in CSS?",
+                choices: ["relative", "absolute", "fixed", "static"],
+                answer: 4
+            }
+            ,
+            {
+                question: "Which of the following is used to insert a line break in HTML?",
+                choices: ["<hr>", "<br>", "<lb>", "<break>"],
+                answer: 2
+            },
+            {
+                question: "Which HTML tag is used to define the largest heading?",
+                choices: ["<h1>", "<h3>", "<h6>", "<h2>"],
+                answer: 1
+            },
+            // ----------------------------------------------
+            {
+                question: "What does CSS stand for?",
+                choices: ["Cascading Style Sheets", " Computer Style Sheets", "Creative Style Sheets", "Colorful Style Sheets"],
+                answer: 1
+            },
+            {
+                question: "Which property is used to change the background color of an element?",
+                choices: ["color", "background-color", "bg-color", "background"],
+                answer: 2
+            },
+            {
+                question: "Which CSS property is used to change the text color?",
+                choices: ["color", "font-color", "text-color", "foreground-color"],
+                answer: 1
+            },
+            {
+                question: "Which property is used to add shadows to text in CSS?",
+                choices: ["text-shadow", "shadow", "add-shadow", "insert-shadow"],
+                answer: 1
+            },
+            {
+                question: "why use CSS.",
+                choices: ["for design", "for text", "nothing", "code work"],
+                answer: 1
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        function loadQuestion() {
+            const questionData = questions[currentQuestionIndex];
+            document.getElementById("question").textContent = questionData.question;
+
+            const choicesContainer = document.getElementById("choices");
+            choicesContainer.innerHTML = "";
+            questionData.choices.forEach((choice, index) => {
+                const button = document.createElement("button");
+                button.textContent = choice;
+                button.classList.add("choice");
+                button.onclick = () => checkAnswer(button, index);
+                choicesContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, selectedIndex) {
+            const correctAnswer = questions[currentQuestionIndex].answer;
+            // Add the 'selected' class to the clicked button (green color)
+            button.classList.add("selected");
+
+            if (selectedIndex === correctAnswer) {
+                score++;
+            }
+
+            // Disable further clicking on answers
+            const allChoices = document.querySelectorAll('.choice');
+            allChoices.forEach(choice => {
+                choice.disabled = true;
+            });
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            const allChoices = document.querySelectorAll('.choice');
+            allChoices.forEach(choice => {
+                choice.disabled = false;
+                choice.classList.remove("selected"); // Reset the selected class for the next question
+            });
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                document.getElementById("result").textContent = `Score: ${score}`;
+                document.getElementById("next-btn").style.display = "none";
+                playMusic(); // Play music when the quiz ends
+            }
+        }
+
+        function playMusic() {
+            const music = document.getElementById("music");
+            music.play(); // Start playing the music
+        }
+
+        // Initial load
+        loadQuestion();
+    </script>
+</body>
+</html>
